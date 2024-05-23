@@ -15,30 +15,41 @@ namespace SystemProg_DZ_4_Multithreading
 {
 	public partial class Form1 : Form
 	{
-
-		//List<ProgressBar> progressBarList = new List<ProgressBar>();
-		int countBars;
-
-		//BackgroundWorker bgw = new BackgroundWorker();
-		CustomProgressBar tempProgressBar = new CustomProgressBar();
-
+		int countBars = 1;
 		Random random = new Random();
-		List<CustomProgressBar> progressBars = new List<CustomProgressBar>();
-
-
-
 
 		public Form1()
 		{
 			InitializeComponent();
+		}
 
-			//ProgressBar temp = new ProgressBar();
-			//tempProgressBar.Location = new Point(100, 200);
-			//tempProgressBar.Height = 20;
-			//tempProgressBar.Width = 200;
-			//tempProgressBar.Minimum = 0;
-			//tempProgressBar.Maximum = 100;
-			//flowLayoutPanel1.Controls.Add(tempProgressBar);
+		public Brush GetColor(int rand = 0)
+		{
+			switch (rand)
+			{
+				case 0:
+					return Brushes.Red;
+				case 1:
+					return Brushes.Green;
+				case 2:
+					return Brushes.Blue;
+				case 3:
+					return Brushes.Magenta;
+				case 4:
+					return Brushes.Yellow;
+				case 5:
+					return Brushes.Blue;
+				case 6:
+					return Brushes.Aqua;
+				case 7:
+					return Brushes.Aquamarine;
+				case 8:
+					return Brushes.DarkBlue;
+				case 9:
+					return Brushes.LightBlue;
+				default:
+					return Brushes.Black;
+			}
 		}
 
 		private void numericUpDown_NumberBars_ValueChanged(object sender, EventArgs e)
@@ -49,18 +60,17 @@ namespace SystemProg_DZ_4_Multithreading
 		public void NewProgressBar()
 		{
 			BackgroundWorker bgw = new BackgroundWorker();
-			CustomProgressBar tempProgressBar = new CustomProgressBar();
+			CustomProgressBar tempProgressBar = new CustomProgressBar(GetColor(random.Next(0,9)));
 
 			tempProgressBar.Location = new Point(100, 200);
 			tempProgressBar.Height = 20;
 			tempProgressBar.Width = 450;
-			tempProgressBar.Minimum = 0;
+			tempProgressBar.Minimum = random.Next(0, 50);
 			tempProgressBar.Maximum = 100;
 			flowLayoutPanel1.Controls.Add(tempProgressBar);
 
 			bgw.DoWork += new DoWorkEventHandler(bgw_DoWork);
 			bgw.ProgressChanged += new ProgressChangedEventHandler(bgw_ProgressChanged);
-			//bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgw_RunWorkerCompleted);
 			bgw.WorkerReportsProgress = true;
 			bgw.RunWorkerAsync();
 
@@ -77,87 +87,36 @@ namespace SystemProg_DZ_4_Multithreading
 
 			void bgw_ProgressChanged(object sender, ProgressChangedEventArgs e)
 			{
-				tempProgressBar.Value = e.ProgressPercentage;
+				if (e.ProgressPercentage >= tempProgressBar.Value)
+				{
+					tempProgressBar.Value = e.ProgressPercentage;
+				}
 			}
-
-			//void bgw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-			//{
-			//	// Завершение работы фонового потока
-			//}
-
-
 		}
-
-
-
-
-
-
 
 		private void bt_Start_Click(object sender, EventArgs e)
 		{
-			for (int i = 0; i < countBars ; i++)
+			for (int i = 0; i < countBars; i++)
 			{
 				NewProgressBar();
 			}
-
-
-			//FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel();
-			//flowLayoutPanel.AutoSize = true;
-
-			//	System.Windows.Forms.Label some_lb = new System.Windows.Forms.Label();
-			//some_lb.AutoSize = true;
-			//some_lb.Text = (DateTime.Now).ToLongTimeString();
-			//flowLayoutPanel.Controls.Add(some_lb);
-
-			//System.Windows.Forms.Button btn_delete_lable_ = new System.Windows.Forms.Button();
-			//btn_delete_lable_.Text = "x";
-			//btn_delete_lable_.BackColor = Color.Red;
-
-			//btn_delete_lable_.Click += (object s, EventArgs ee) =>
-			//{
-			//	flowLayoutPanel1.Controls.Remove(flowLayoutPanel);
-			//};
-
-			//flowLayoutPanel.Controls.Add(btn_delete_lable_);
-
-			//flowLayoutPanel1.Controls.Add(flowLayoutPanel);
-
-
-			//bgw.DoWork += new DoWorkEventHandler(bgw_DoWork);
-			//bgw.ProgressChanged += new ProgressChangedEventHandler(bgw_ProgressChanged);
-			//bgw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgw_RunWorkerCompleted);
-			//bgw.WorkerReportsProgress = true;
-			//bgw.RunWorkerAsync();
 		}
-
-
-
-
-		//private void Form1_Load(object sender, EventArgs e)
-		//{
-		//	CustomProgressBar customProgressBar = new CustomProgressBar();
-		//	customProgressBar.Location = new Point(10, 10);
-		//	customProgressBar.Size = new Size(200, 20);
-		//	Controls.Add(customProgressBar);
-		//}
 	}
 
 	public class CustomProgressBar : System.Windows.Forms.ProgressBar
 	{
-		public CustomProgressBar()
+        public Brush RandomColor { get; set; }
+
+		public CustomProgressBar(Brush temp)
 		{
+			RandomColor = temp;
 			SetStyle(ControlStyles.UserPaint, true);
 		}
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Rectangle rect = ClientRectangle;
 			rect.Width = (int)(rect.Width * ((double)Value / Maximum)) - 4;
-			e.Graphics.FillRectangle(Brushes.Red, 2, 2, rect.Width, rect.Height - 4);
+			e.Graphics.FillRectangle(RandomColor, 2, 2, rect.Width, rect.Height - 4);
 		}
 	}
-
-	// Использование в форме:
-
 }
